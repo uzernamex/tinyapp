@@ -10,6 +10,11 @@ app.set("view engine", "ejs");
 
 app.use(express.urlencoded({ extended: true }));
 
+app.use((req, res, next) => {
+  res.locals.username = req.cookies[username]; 
+  next();
+});
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -88,4 +93,11 @@ app.get("/u/:id", (req, res) => {
   } else {
     console.error("URL unavailable");
   }
+});
+app.get("/urls", (req, res) => {
+  const templateVars = {
+    username: req.cookies["username"],
+    // ... any other vars
+  };
+  res.render("urls_index", templateVars);
 });
