@@ -29,14 +29,16 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-//for (const key in urlDatabase) {
- // if (urlDatabase.hasOwnProperty(key)) {
-   // const value = urlDatabase[key];
-    //return console.log
-    //(`Key: ${key}, Value: ${value}`);
-   // return value;
-  //}
-//}; 
+app.get("/urls/:id", (req, res) => {
+  const id = req.params.id;
+  const longURL = urlDatabase[id];
+  if (!longURL) {
+    console.error("Error: Unable to locate requested URL");
+  } else {
+    const templateVars = {id, longURL};
+    res.render("urls_show", templateVars);
+  }
+});
 
 app.get("/urls/:id", (req, res) => {
   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id
