@@ -60,14 +60,14 @@ app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = longURL;
-  res.redirect(`/urls/${shortURL}`);
   if(urlDatabase[shortURL]) {
     delete urlDatabase[shortURL];
     res.redirect("/urls");
-    
   } else {
     console.error("Shortened URL unavailable");
   }
+  res.redirect(`/urls/${shortURL}`);
+  
   console.log(req.body);
   const randomString = generateRandomString();
   console.log(randomString);
