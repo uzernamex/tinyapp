@@ -1,16 +1,22 @@
 const express = require("express");
 const app = express();
 const PORT = 8080;
-app.set("view engine", "ejs");
+
 function generateRandomString() {
   const alphaNumeric = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890";
   let randomString = " ";
-  for (let i = 0, i < alphaNumeric.length; i++) {
-   
+  for (let i = 0, i < 6; i++) {
+    const index = Math.floor(Math.random() * alphaNumeric.length);
+    randomString += alphaNumeric.charAt(index);
   }
-   
-  return 
-}
+  return randomString;
+};
+
+const randomString = generateRandomString();
+console.log(randomString);
+
+app.set("view engine", "ejs");
+
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
