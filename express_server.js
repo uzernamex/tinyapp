@@ -45,3 +45,7 @@ app.get("/urls/:id", (req, res) => {
   ]};
   res.render("urls_show", templateVars);
 });
+
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
+});
