@@ -46,10 +46,6 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
-app.get("/urls/:id", (req, res) => {
-  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id]};
-  res.render("urls_show", templateVars);
-});
 const alphaNumeric = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890";
 const generateRandomString = function() {
   let randomString = "";
@@ -65,7 +61,13 @@ app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = longURL;
   res.redirect(`/urls/${shortURL}`);
-  
+  if(urlDatabase[shortURL]) {
+    delete urlDatabase[shortURL];
+    res.redirect("/urls");
+    
+  } else {
+    console.error("Shortened URL unavailable");
+  }
   console.log(req.body);
   const randomString = generateRandomString();
   console.log(randomString);
