@@ -1,19 +1,11 @@
 const express = require("express");
 const app = express();
 const PORT = 8080;
-
-
-
-
-
-
-
-
-
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+
 app.set("view engine", "ejs");
 
 app.use(express.urlencoded({ extended: true }));
@@ -58,20 +50,34 @@ app.get("/urls/:id", (req, res) => {
   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id]};
   res.render("urls_show", templateVars);
 });
+const alphaNumeric = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890";
+const generateRandomString = function() {
+  let randomString = "";
+  for (i = 0; i < 6; i++) {
+    const index = Math.floor(Math.random() * alphaNumeric.length);
+    randomString += alphaNumeric.charAt(index);
+  }
+  return randomString;
+};
 
 app.post("/urls", (req, res) => {
-  const alphaNumeric = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890";
-  const generateRandomString = function() {
-    let randomString = "";
-    for (let i = 0, i < 6; i++) {
-      const index = Math.floor(Math.random() * alphaNumeric.length);
-      randomString += alphaNumeric.charAt(index);
-    }
-    return randomString;
-  };
-  console.log(req.body); // Log the POST request body to the console
+  const longURL = req.body.longURL;
+  const shortURL = generateRandomString();
+  urlDatabase[shortURL] = longURL;
+  res.redirect(`/urls/${shortURL}`);
+  
+  console.log(req.body);
   const randomString = generateRandomString();
   console.log(randomString);
-  res.send("Ok"); // Respond with 'Ok' (we will replace this)
-  
+  res.send("Ok");
+});
+
+app.get("/u/:id", (req, res) => {
+  const shortURL = req.params.id;
+  const longURL = urlDatabase[shortURL];
+  if (longURL) {
+    res.redirect(longURL);
+  } else {
+    console.error("URL unavailable");
+  }
 });
