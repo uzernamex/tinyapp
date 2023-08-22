@@ -10,9 +10,7 @@ const urlDatabase = {
 
 app.set("view engine", "ejs");
 app.use(bodyParser());
-
-//app.use(express.urlencoded({ extended: true }));
-
+app.use(express.urlencoded({ extended: true }));
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -88,6 +86,9 @@ app.get("/register", (req, res) => {
   res.render("register");
 });
 
+app.get("/login", (req, res) => {
+  res.render("login");
+});
 
 app.post("/logout", (req, res) => {
   res.clearCookie("username");
@@ -143,13 +144,14 @@ const users = {
     password: "dishwasher-funk",
   },
 };
-
-const getUserByEmail = function() {
-  if((!email) || (!password)) {
-    console.error("404; Page not found");
-  } else {
-    return userID;
-  }
+const getUserByEmail = (email) => {
+  return users.find(user => user.email === email);
+}
+if((!email) || (!password)) {
+  return res.status(400)({error: "Please enter the correct email and password"});
+}
+if (getUserByEmail === email) {
+  return res.status(400)({
+    error: "User already exists."
+  })
 };
-
-  
