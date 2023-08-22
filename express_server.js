@@ -58,11 +58,15 @@ const generateRandomString = function() {
 };
 
 app.post("/login", (req, res) => {
-  const username = req.body.username;
-  res.cookie("username", username);
+  const uuser_id = req.body.user_id;
+  res.cookie("user_id", user_id);
   res.redirect("/urls");
-  const user = getUserByEmail(email);
-  if (!user || user.password!== password) {
+  const getUserByEmail = (email) => {
+    for (const userID in users) {
+      if (!users[userID].email === email) {
+        return users[userID];
+      }
+    }
     return res.status(403).send("Invalid email or password");
   }
 });
@@ -78,6 +82,11 @@ users[userID] = {
   email: email,
   password: password
 }
+
+
+if (!email || !password) {
+  return res.status(400).send("Please verify that your email and password are correct.");
+};
 
 //set cookie with the userID
   res.cookie("user_id", userID);

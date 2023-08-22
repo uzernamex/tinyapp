@@ -18,8 +18,8 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
     </div>
-    <% if (username) { %>
-      <p class="navbar-text">Logged in as: <%= username %></p>
+    <% if (user_id) { %>
+      <p class="navbar-text">Logged in as: <%= user_id %></p>
       <form action="/logout" method="POST" class="form-inline m1-auto">
         <button class="btn btn-outline-lightmy-2 my-sm-0" type="submit">Logout</button></button></form>
       </form>
@@ -29,14 +29,18 @@
         <% } %>
  /\</nav>
  </header>
-      
 
 
-<%if (username) { %>
+const userLoggedIn
+
+<%if (userLoggedIn) { %>
   <p class="navbar-text">Logged in as: <%= username %></p>>
+  <form action="/logout" method="POST" class="form-inline m1-auto">
+    <button class="btm btn-outline-light my-2 my-sm-0" type="submit">Logout</button>
+  </form>
   <% } else { %>
     <form action="/login" method="POST" class="form-inline m1-auto">
-      <input type="text" class="form-control mr-sm-2" name ="username" placeholder="Username">
+      <input type="text" class="form-control mr-sm-2" name ="username" placeholder="user_ide">
       <button class="btn btn-outline-light my-sm-0" type="submit">Login</button>
 
 
