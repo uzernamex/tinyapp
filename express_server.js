@@ -4,6 +4,7 @@ const { password } = require("pg/lib/defaults");
 const { post } = require("request");
 const app = express();
 const PORT = 8080;
+
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
@@ -15,6 +16,10 @@ const urlsForUserId = function() {
   }
   return userID = userLoggedIn(longURL);
 };
+
+//req.session.user_id = "some value";
+//To set the user_id key on a session, write: req.session.user_id = "some value";
+//To read a value, write: req.session.user_id
 
 app.set("view engine", "ejs");
 app.use(bodyParser());
@@ -80,8 +85,11 @@ const generateRandomString = function() {
 
 app.post("/login", (req, res) => {
   const uuser_id = req.body.user_id;
+  const authorize = bcrypt.compareSync.password;
+  
   res.cookie("user_id", user_id);
   res.redirect("/urls");
+
   const getUserByEmail = (email) => {
     for (const userID in users) {
       if (!users[userID].email === email) {
@@ -93,10 +101,17 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
+  const userID = generateRandomString();
   const email = req.body.email; 
   const password = req.body.password;
-  const userID = generateRandomString();
+  const bcrypt = require("bcryptjs");
+  const hashedPassword = bcrypt.hashSync(password, 10);
+  bcrypt.compareSync
   
+  //req.session.user_id = "some value";
+//To set the user_id key on a session, write: req.session.user_id = "some value";
+//To read a value, write: req.session.user_id
+
   //add user to database (users object)
 users[userID] = {
   id: userID,
@@ -213,4 +228,13 @@ if (getUserByEmail === email) {
   })
 };
 
-const 
+const authorizedUser = function(req, res) {
+  const userID = req.cookies.user_id;
+  const shortURL = req.params.shortURl; 
+  if (!userID) {
+    return res.status(403).send("Please login to perform this action");
+  } 
+  if (!urlDatabase[shortURL] || urlDatabase[shortURL]) {
+   return res.status(403).send("Permission required to vie this page") 
+  }
+};
