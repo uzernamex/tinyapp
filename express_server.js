@@ -1,4 +1,6 @@
 const express = require("express");
+const bodyParser = require("body-parser");
+const { password } = require("pg/lib/defaults");
 const app = express();
 const PORT = 8080;
 const urlDatabase = {
@@ -7,13 +9,9 @@ const urlDatabase = {
 };
 
 app.set("view engine", "ejs");
+app.use(bodyParser());
 
-app.use(express.urlencoded({ extended: true }));
-
-app.use((req, res, next) => {
-  res.locals.username = req.cookies[username]; 
-  next();
-});
+//app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -67,6 +65,36 @@ app.post("/login", (req, res) => {
   res.redirect("/urls");
 });
 
+app.post("/register", (req, res) => {
+  const email = req.body.email; 
+  const password = req.body.password;
+  const userID = generateRandomString();
+  
+  //add user to database (users object)
+users[userID] = {
+  id: userID,
+  email: email,
+  password: password
+}
+
+//set cookie with the userID
+  res.cookie("user_id", userID);
+
+  //redirect to urls page
+  res.redirect("/urls")
+});
+  
+app.get("/register", (req, res) => {
+  res.render("register");
+});
+
+
+app.post("/logout", (req, res) => {
+  res.clearCookie("username");
+  res.redirect("/urls");
+  res.render("/register")
+})
+
 app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
@@ -97,7 +125,31 @@ app.get("/u/:id", (req, res) => {
 app.get("/urls", (req, res) => {
   const templateVars = {
     username: req.cookies["username"],
+    register: res.render("register"),
     // ... any other vars
   };
   res.render("urls_index", templateVars);
 });
+
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur",
+  },
+  user2RandomID: {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk",
+  },
+};
+
+const getUserByEmail = function() {
+  if((!email) || (!password)) {
+    console.error("404; Page not found");
+  } else {
+    return userID;
+  }
+};
+
+  
