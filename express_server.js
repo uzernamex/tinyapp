@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const { password } = require("pg/lib/defaults");
 const { post } = require("request");
+const getUserByEmail = require("/getUserByEmail");
 const app = express();
 const PORT = 8080;
 
@@ -9,18 +10,20 @@ const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+app.post("/login", (req, res) => {
+  const user_id = req.body.user_id;
+  const password = bcrypt.compareSync.password;
+  
+ // res.cookie("user_id", user_id);
+  req.session.user_id = user_id;
+  res.redirect("/urls");
 
 const urlsForUserId = function() {
   if (userLoggedIn) {
-    return longURL
+    return longURL;
   }
   return userID = userLoggedIn(longURL);
 };
-
-//req.session.user_id = "some value";
-//To set the user_id key on a session, write: req.session.user_id = "some value";
-//To read a value, write: req.session.user_id
-
 app.set("view engine", "ejs");
 app.use(bodyParser());
 app.use(express.urlencoded({ extended: true }));
@@ -31,12 +34,6 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
-/*
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
-});
-*/
 
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
@@ -56,7 +53,7 @@ app.get("/urls/:id", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
-  if (!userLoggedIn) {
+  if(!userLoggedIn) {
     res.redirect ("/login");
     return app.post("Registration is required to complete this action");
   }
@@ -81,13 +78,7 @@ const generateRandomString = function() {
   return randomString;
 };
 
-app.post("/login", (req, res) => {
-  const user_id = req.body.user_id;
-  const password = bcrypt.compareSync.password;
-  
- // res.cookie("user_id", user_id);
-  req.session.user_id = user_id;
-  res.redirect("/urls");
+
 
   const getUserByEmail = (email) => {
     for (const userID in users) {
@@ -116,11 +107,7 @@ users[userID] = {
   id: userID,
   email: email,
   password: password
-}
-
-
-
-
+};
 
 const urlDatabase = {
   b6UTxQ: {
@@ -135,15 +122,13 @@ const urlDatabase = {
 
 if (!email || !password) {
   return res.status(400).send("Please verify that your email and password are correct.");
-};
+}
+req.session.user_id = user_id;
 
-//set cookie with the userID
-
-req.session.user_id = user_id; 
 //res.cookie("user_id", userID);
 
   //redirect to urls page
-  res.redirect("/urls")
+  res.redirect("/urls");
 });
   
 app.get("/register", (req, res) => {
@@ -160,13 +145,13 @@ app.get("/login", (req, res) => {
 app.post("/logout", (req, res) => {
   res.clearCookie("username");
   res.redirect("/login");
-  res.render("/register")
-})
+  res.render("/register");
+});
 
 app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
-  const userID = req.session.user_id; 
+  const userID = req.session.user_id;
   urlDatabase[shortURL] = longURL;
   if(urlDatabase[shortURL]) {
     delete urlDatabase[shortURL];
@@ -213,14 +198,13 @@ const users = {
   },
 };
 
-
 const authorizedUser = function(req, res) {
   const userID = req.session.user_id;
-  const shortURL = req.params.shortURl; 
+  const shortURL = req.params.shortURl;
   if (!userID) {
     return res.status(403).send("Please login to perform this action");
-  } 
+  }
   if (!urlDatabase[shortURL] || urlDatabase[shortURL]) {
-   return res.status(403).send("Permission required to vie this page") 
+    return res.status(403).send("Permission required to vie this page");
   }
 };
