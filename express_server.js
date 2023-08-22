@@ -32,13 +32,11 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-
+/*
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
+*/
 
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
@@ -84,10 +82,11 @@ const generateRandomString = function() {
 };
 
 app.post("/login", (req, res) => {
-  const uuser_id = req.body.user_id;
-  const authorize = bcrypt.compareSync.password;
+  const user_id = req.body.user_id;
+  const password = bcrypt.compareSync.password;
   
-  res.cookie("user_id", user_id);
+ // res.cookie("user_id", user_id);
+  req.session.user_id = user_id;
   res.redirect("/urls");
 
   const getUserByEmail = (email) => {
@@ -134,17 +133,14 @@ const urlDatabase = {
   },
 };
 
-
-
-
-
-
 if (!email || !password) {
   return res.status(400).send("Please verify that your email and password are correct.");
 };
 
 //set cookie with the userID
-  res.cookie("user_id", userID);
+
+req.session.user_id = user_id; 
+//res.cookie("user_id", userID);
 
   //redirect to urls page
   res.redirect("/urls")
@@ -170,7 +166,7 @@ app.post("/logout", (req, res) => {
 app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
-  const userID = req.cookies.user_id; 
+  const userID = req.session.user_id; 
   urlDatabase[shortURL] = longURL;
   if(urlDatabase[shortURL]) {
     delete urlDatabase[shortURL];
@@ -216,20 +212,10 @@ const users = {
     password: "dishwasher-funk",
   },
 };
-const getUserByEmail = (email) => {
-  return users.find(user => user.email === email);
-}
-if((!email) || (!password)) {
-  return res.status(400)({error: "Please enter the correct email and password"});
-}
-if (getUserByEmail === email) {
-  return res.status(400)({
-    error: "User already exists."
-  })
-};
+
 
 const authorizedUser = function(req, res) {
-  const userID = req.cookies.user_id;
+  const userID = req.session.user_id;
   const shortURL = req.params.shortURl; 
   if (!userID) {
     return res.status(403).send("Please login to perform this action");
