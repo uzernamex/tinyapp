@@ -1,11 +1,19 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const { password } = require("pg/lib/defaults");
+const { post } = require("request");
 const app = express();
 const PORT = 8080;
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
+};
+
+const urlsForUserId = function() {
+  if (userLoggedIn) {
+    return longURL
+  }
+  return userID = userLoggedIn(longURL);
 };
 
 app.set("view engine", "ejs");
@@ -35,7 +43,7 @@ app.get("/urls", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const id = req.params.id;
   const longURL = urlDatabase[id];
-  if (!longURL) {
+  if (!longURL || !userLoggedIn) {
     console.error("Error: Unable to locate requested URL");
   } else {
     const templateVars = {id, longURL};
@@ -45,6 +53,19 @@ app.get("/urls/:id", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
+  if (!userLoggedIn) {
+    res.redirect ("/login");
+    return app.post("Registration is required to complete this action");
+  }
+});
+
+app.get("/login", (req, res) => {
+  const userLoggedIn = getUserByEmail(email);
+  if (userLoggedIn) {
+    res.redirect("/urls");
+  } else {
+    return res.status(400).send("Please log in");
+  }
 });
 
 const alphaNumeric = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890";
@@ -84,6 +105,25 @@ users[userID] = {
 }
 
 
+
+
+
+const urlDatabase = {
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW",
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW",
+  },
+};
+
+
+
+
+
+
 if (!email || !password) {
   return res.status(400).send("Please verify that your email and password are correct.");
 };
@@ -101,6 +141,9 @@ app.get("/register", (req, res) => {
 
 app.get("/login", (req, res) => {
   res.render("login");
+  if (userLoggedIn) {
+    res.redirect("/urls");
+  }
 });
 
 app.post("/logout", (req, res) => {
@@ -112,6 +155,7 @@ app.post("/logout", (req, res) => {
 app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
+  const userID = req.cookies.user_id; 
   urlDatabase[shortURL] = longURL;
   if(urlDatabase[shortURL]) {
     delete urlDatabase[shortURL];
@@ -168,3 +212,5 @@ if (getUserByEmail === email) {
     error: "User already exists."
   })
 };
+
+const 
