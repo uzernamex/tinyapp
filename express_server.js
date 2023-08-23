@@ -191,9 +191,3 @@ app.get("/login", (req, res) => {
   });
 
 //const shortURL = req.params.shortURl;
-if (!userID) {
-  return res.status(403).send("Please login to perform this action");
-}
-if (!urlDatabase[shortURL] || urlDatabase[shortURL]) {
-  return res.status(403).send("Permission required to vie this page");
-};
