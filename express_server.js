@@ -70,8 +70,8 @@ const generateRandomString = function() {
 
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
-});
+  res.send("Hello!")
+})
 
 app.post("/login", (req, res) => {
   const user_id = req.body.user_id;
