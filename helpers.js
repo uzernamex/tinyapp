@@ -30,7 +30,7 @@ module.exports = { getUserByEmail };
 // };
 
 const userLoggedIn = (req) => {
-console.log(req.session);
+// console.log(req.session);
 console.log(!!req.session.user_id);
   return !!req.session.user_id;
 };

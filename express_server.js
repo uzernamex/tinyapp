@@ -36,8 +36,13 @@ app.get("/", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  const user_id = req.body.user_id;
-  const password = bcrypt.compareSync.password;
+  // const user_id = req.body.user_id;
+const password = req.body.password;
+const email = req.body.email;
+const hashedPassword = getUserByEmail(email, users).password;
+
+  // const password = users.
+  bcrypt.compareSync(password, hashedPassword); 
   req.session.user_id = user_id;
   res.redirect("/urls");
 });
@@ -52,7 +57,11 @@ app.get("/login", (req, res) => {
 
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
+  if (userLoggedIn(req)) { 
   res.render("urls_index", templateVars);
+  } else {
+    res.send("<p> Please login </p>")
+  }
 });
 
 app.get("/urls/:id", (req, res) => {
