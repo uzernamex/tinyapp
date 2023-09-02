@@ -4,19 +4,19 @@ const getUserByEmail = (email, database) => {
     if (user.email === email) {
       return user;
     }
-    if((!email) || (!password)) {
-    return res.status(400)({error: "Please enter the correct email and password"});
+    if ((!email) || (!password)) {
+      return res.status(400)({ error: "Please enter the correct email and password" });
+    }
+    if (getUserByEmail === email) {
+      return res.status(400)({
+        error: "User already exists."
+      })
+    }
   }
-  if (getUserByEmail === email) {
-    return res.status(400)({
-      error: "User already exists."
-    })
-  }
-}
-return null;
+  return null;
 };
 
-module.exports = {getUserByEmail};
+module.exports = { getUserByEmail };
 
 // const getUserByEmail = (email) => {
 //   for (const userID in users) {
@@ -30,13 +30,15 @@ module.exports = {getUserByEmail};
 // };
 
 const userLoggedIn = (req) => {
-  return req.session.user_id !== undefined; 
+console.log(req.session);
+console.log(!!req.session.user_id);
+  return !!req.session.user_id;
 };
 
-module.exports.userLoggedIn;
+module.exports.userLoggedIn = userLoggedIn;
 
 
-const generateRandomString = function() {
+const generateRandomString = function () {
   const alphaNumeric = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890";
   let randomString = "";
   for (let i = 0; i < 6; i++) {
@@ -46,13 +48,13 @@ const generateRandomString = function() {
   return randomString;
 };
 
-module.exports.generateRandomString;
+module.exports.generateRandomString = generateRandomString;
 
 
-const urlsForUserId = function() {
+const urlsForUserId = function () {
   if (userLoggedIn) {
     return longURL;
   }
 };
-module.exports.urlsForUserId; 
+module.exports.urlsForUserId = urlsForUserId;
 

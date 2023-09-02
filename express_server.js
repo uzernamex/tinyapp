@@ -22,9 +22,18 @@ app.use(cookieSession({
   keys: [/* secret keys */"abc"],
 }));
 
+app.listen(PORT, () => {
+  console.log(`App listening on port ${PORT}!`);
+});
+
 app.get("/", (req, res) => {
-  res.send("Hello!")
-})
+  console.log(req)
+  if(!userLoggedIn(req)) {
+    res.redirect("/login");
+  } else {
+    res.redirect("/urls");
+  }
+});
 
 app.post("/login", (req, res) => {
   const user_id = req.body.user_id;
@@ -34,10 +43,10 @@ app.post("/login", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  if (userLoggedIn) {
+  if (userLoggedIn(req)) {
     res.redirect("/urls");
   } else {
-    return res.status(400).send("Please log in");
+    return res.render("login");
   }
 });
 
@@ -119,9 +128,7 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}!`);
-});
+
 
 app.get("/register", (req, res) => {
   res.render("register");
