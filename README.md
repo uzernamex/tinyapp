@@ -4,7 +4,7 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 ## Final Product
 
-![/var/folders/zs/qf5mqspx1l534qxyxw3fnxtc0000gn/T/TemporaryItems/NSIRD_screencaptureui_keaZbX/Screenshot 2023-08-22 at 9.50.33 PM.png](#)
+![Alt text](TinyApp.png)
 
 ## Dependencies
 

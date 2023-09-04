@@ -1,4 +1,3 @@
-
 const urlDatabase = {
   b2xVn2: {
     longURL: "http://www.lighthouselabs.ca",
