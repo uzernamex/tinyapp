@@ -4,14 +4,14 @@ const getUserByEmail = (email, database) => {
     if (user.email === email) {
       return user;
     }
-    if ((!email) || (!password)) {
-      return res.status(400)({ error: "Please enter the correct email and password" });
-    }
-    if (getUserByEmail === email) {
-      return res.status(400)({
-        error: "User already exists."
-      })
-    }
+    // if ((!email) || (!password)) {
+    //   return res.status(400)({ error: "Please enter the correct email and password" });
+    // }
+    // if (getUserByEmail === email) {
+    //   return res.status(400)({
+    //     error: "User already exists."
+    //   })
+    // }
   }
   return null;
 };
@@ -29,10 +29,10 @@ module.exports = { getUserByEmail };
 //   }
 // };
 
-const userLoggedIn = (req) => {
+const userLoggedIn = (req, users) => {
 // console.log(req.session);
 console.log(!!req.session.user_id);
-  return !!req.session.user_id;
+  return !!req.session.user_id && users[req.session.user_id];
 };
 
 module.exports.userLoggedIn = userLoggedIn;

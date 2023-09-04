@@ -13,6 +13,7 @@ const app = express();
 const PORT = 8080;
 const { password } = require("pg/lib/defaults");
 const { post } = require("request");
+const { request } = require("express");
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -27,8 +28,7 @@ app.listen(PORT, () => {
 });
 
 app.get("/", (req, res) => {
-  console.log(req)
-  if(!userLoggedIn(req)) {
+  if(!userLoggedIn(req, users)) {
     res.redirect("/login");
   } else {
     res.redirect("/urls");
@@ -39,16 +39,21 @@ app.post("/login", (req, res) => {
   // const user_id = req.body.user_id;
 const password = req.body.password;
 const email = req.body.email;
-const hashedPassword = getUserByEmail(email, users).password;
+const user = getUserByEmail(email, users);
+const hashedPassword = user.password;
 
   // const password = users.
-  bcrypt.compareSync(password, hashedPassword); 
-  req.session.user_id = user_id;
+if (bcrypt.compareSync(password, hashedPassword)) {
+  req.session.user_id = user.id;
   res.redirect("/urls");
+} else {
+  return res.status(401).send("Invalid email or password");
+}
 });
 
 app.get("/login", (req, res) => {
-  if (userLoggedIn(req)) {
+if (userLoggedIn(req, users)) {
+  console.log(">>>>>>>>>>>>>>>>", req.session.user_id)
     res.redirect("/urls");
   } else {
     return res.render("login");
@@ -56,8 +61,9 @@ app.get("/login", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
-  if (userLoggedIn(req)) { 
+console.log("*****************", users[req.session.user_id])
+  if (userLoggedIn(req, users)) {
+    const templateVars = { urls: urlDatabase, user: users[req.session.user_id] };
   res.render("urls_index", templateVars);
   } else {
     res.send("<p> Please login </p>")
@@ -98,7 +104,7 @@ app.post("/register", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.session.user_id = null;
+  req.session.user_id = null;
   res.redirect("/login");
   res.render("/register");
 });
@@ -132,22 +138,16 @@ app.get("/u/:id", (req, res) => {
   }
 });
 
-app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
-  res.render("urls_index", templateVars);
-});
-
-
 
 app.get("/register", (req, res) => {
   res.render("register");
 });
 
 app.get("/login", (req, res) => {
-  res.render("login");
-  if (userLoggedIn) {
+
+  if (userLoggedIn(req, users)) {
     res.redirect("/urls");
   } else {
-    return res.status(400).send("Please log in");
+    res.render("login");
   }
 });
