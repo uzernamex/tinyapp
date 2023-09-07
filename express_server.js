@@ -22,6 +22,7 @@ app.use(cookieSession({
   keys: ["abc"],
 }));
 
+//Redirects user to based on login status
 
 app.get("/", (req, res) => {
   if (!userLoggedIn(req, users)) {
@@ -34,6 +35,7 @@ app.get("/", (req, res) => {
 
 // U R L S   R O U T E S
 
+//displays URLs once user is logged in
 app.get("/urls", (req, res) => {
   console.log("*****************", users[req.session.user_id]);
   if (userLoggedIn(req, users)) {
@@ -44,6 +46,7 @@ app.get("/urls", (req, res) => {
   }
 });
 
+//Generates a short URL
 app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
@@ -62,17 +65,17 @@ app.post("/urls", (req, res) => {
   res.send("Ok");
 });
 
+//Form to create new URL 
 app.get("/urls/new", (req, res) => {
   if (!req.session.user_id) {
     res.redirect("/login");
   } else {
-
     const templateVars = { urls: urlDatabase, user: users[req.session.user_id] };
     res.render("urls_new", templateVars);
-
   }
 });
 
+//displays URL for the ogged in user
 app.get("/urls/:id", (req, res) => {
   const id = req.params.id;
   const longURL = urlDatabase[id];
@@ -84,6 +87,7 @@ app.get("/urls/:id", (req, res) => {
   }
 });
 
+//redirects to original long URL from short URL
 app.get("/u/:id", (req, res) => {
   const shortURL = req.params.id;
   const longURL = urlDatabase[shortURL];
@@ -122,6 +126,7 @@ app.post("/login", (req, res) => {
 
 // L O G O U T
 
+//action to log user out, sends user to login page
 app.post("/logout", (req, res) => {
   req.session.user_id = null;
   res.redirect("/login");
@@ -130,6 +135,7 @@ app.post("/logout", (req, res) => {
 
 
 //  R E G I S T E R   R O U T E S
+
 app.get("/register", (req, res) => {
   res.render("register");
 });

@@ -1,3 +1,5 @@
+// H E L P E R   F U N C T I O N S
+
 const getUserByEmail = (email, database) => {
   for (const userID in database) {
     const user = database[userID];
@@ -10,6 +12,8 @@ const getUserByEmail = (email, database) => {
 
 module.exports = { getUserByEmail };
 
+/*************************************************************/
+
 
 const userLoggedIn = (req, users) => {
   console.log(!!req.session.user_id);
@@ -17,6 +21,8 @@ const userLoggedIn = (req, users) => {
 };
 
 module.exports.userLoggedIn = userLoggedIn;
+
+/*************************************************************/
 
 
 const generateRandomString = function() {
@@ -31,9 +37,15 @@ const generateRandomString = function() {
 
 module.exports.generateRandomString = generateRandomString;
 
+/*************************************************************/
 
-const urlsForUserId = function() {
+
+const urlsForUserId = function(userLoggedIn, urlDatabase, user_id) {
   if (userLoggedIn) {
+    const urlForUser = {};
+    for (const shortURL in urlDatabase) {
+      
+    }
     return longURL;
   }
 };
