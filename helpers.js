@@ -39,14 +39,19 @@ module.exports.generateRandomString = generateRandomString;
 
 /*************************************************************/
 
-
+//get url collection / list for a specific user
 const urlsForUserId = function(userLoggedIn, urlDatabase, user_id) {
   if (userLoggedIn) {
     const urlForUser = {};
     for (const shortURL in urlDatabase) {
-      
+      if (urlDatabase[shortURL].userID === user_id) {
+        urlForUser[shortURL] = urlDatabase[shortURL].longURL;
+      }
     }
-    return longURL;
+    return urlForUser;
+  } else {
+    return null;
   }
 };
+
 module.exports.urlsForUserId = urlsForUserId;

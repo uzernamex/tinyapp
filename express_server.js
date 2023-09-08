@@ -65,7 +65,8 @@ app.post("/urls", (req, res) => {
   res.send("Ok");
 });
 
-//Form to create new URL 
+//Form to create new URL
+
 app.get("/urls/new", (req, res) => {
   if (!req.session.user_id) {
     res.redirect("/login");
@@ -79,10 +80,11 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const id = req.params.id;
   const longURL = urlDatabase[id];
+  let user = null;
   if (!longURL || !req.session.user_id) {
     console.error("Error: Unable to locate requested URL");
   } else {
-    const templateVars = { id, longURL };
+    const templateVars = { id, longURL, user };
     res.render("urls_show", templateVars);
   }
 });
