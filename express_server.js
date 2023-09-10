@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 // I M P O R T S  [F I L E S,  R O U T E S,  L I B R A R I E S,  &  M I D D L E W A R E]
 
 const express = require("express");
@@ -32,12 +33,20 @@ app.get("/", (req, res) => {
   }
 });
 
+//step one
+app.get("/urls.json", (req, res) => {
+  res.json(urlDatabase);
+});
+
+//step two
+app.get("/hello", (req, res) => {
+  res.send("<html><body>Hello <b>World</b></body></html>\n");
+});
 
 // U R L S   R O U T E S
 
 //displays URLs once user is logged in
 app.get("/urls", (req, res) => {
-  console.log("*****************", users[req.session.user_id]);
   if (userLoggedIn(req, users)) {
     const templateVars = { urls: urlDatabase, user: users[req.session.user_id] };
     res.render("urls_index", templateVars);
@@ -47,24 +56,26 @@ app.get("/urls", (req, res) => {
 });
 
 //Generates a short URL
-app.post("/urls", (req, res) => {
-  const longURL = req.body.longURL;
-  const shortURL = generateRandomString();
-  urlDatabase[shortURL] = longURL;
 
-  if (urlDatabase[shortURL]) {
-    delete urlDatabase[shortURL];
-    res.redirect("/urls");
-  } else {
-    console.error("Shortened URL unavailable");
-  }
+app.post("/urls", (req, res) => {
+  const longURL = req.body.longURL; //req.urlDatabase.longURL.longURL;
+  const shortURL = generateRandomString();
+ 
+  urlDatabase[shortURL] = longURL;
   res.redirect(`/urls/${shortURL}`);
-  console.log(req.body);
-  const randomString = generateRandomString();
-  console.log(randomString);
-  res.send("Ok");
+
 });
 
+// if (urlDatabase[shortURL]) {
+//   delete urlDatabase[shortURL];
+//   // res.redirect("/urls");
+// } else {
+// //   console.error("Shortened URL unavailable");
+// // }
+// return 
+// //const randomString = generateRandomString();
+// //res.send("Ok");
+// }
 //Form to create new URL
 
 app.get("/urls/new", (req, res) => {
@@ -77,6 +88,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 //displays URL for the ogged in user
+
 app.get("/urls/:id", (req, res) => {
   const id = req.params.id;
   const longURL = urlDatabase[id];
@@ -85,6 +97,7 @@ app.get("/urls/:id", (req, res) => {
     console.error("Error: Unable to locate requested URL");
   } else {
     const templateVars = { id, longURL, user };
+    console.log(templateVars);
     res.render("urls_show", templateVars);
   }
 });
@@ -97,6 +110,7 @@ app.get("/u/:id", (req, res) => {
     res.redirect(longURL);
   } else {
     console.error("URL unavailable");
+    res.status(404).send("URL not found");
   }
 });
 
