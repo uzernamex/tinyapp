@@ -47,7 +47,10 @@ app.get("/", (req, res) => {
 //displays URLs once user is logged in
 app.get("/urls", (req, res) => {
   if (userLoggedIn(req, users)) {
-    const templateVars = { urls: urlDatabase, user: users[req.session.userIdentity] };
+    const templateVars = { 
+      urls: urlDatabase, 
+      user: users[req.session.userIdentity]
+  };
     res.render("urls_index", templateVars);
   } else {
     res.status(401).send("<p> Please login </p>");
@@ -57,16 +60,20 @@ app.get("/urls", (req, res) => {
 //Generates a short URL
 
 app.post("/urls", (req, res) => {
-  const longURL = req.body.longURL; //req.urlDatabase.longURL.longURL;
-  const shortURL = generateRandomString();
- 
-  urlDatabase[shortURL] = {
-    longURL: req.body.longURL, 
-    userID: req.session.userID
-  };
-  res.redirect(`/urls/${shortURL}`);
-} else {
-  res.status(401).send("Please log in first");
+  if (userLoggedIn(req, users)) {
+    const longURL = req.body.longURL; //req.urlDatabase.longURL.longURL;
+    const shortURL = generateRandomString();
+    const userID = req.session.userIdentity;
+    
+    urlDatabase[shortURL] = {
+      longURL: req.body.longURL,
+      userID: req.session.userID
+    };
+    
+    res.redirect(`/urls/${shortURL}`);
+  } else {
+    res.status(401).send("Please log in first");
+  }
 });
 
 // if (urlDatabase[shortURL]) {
