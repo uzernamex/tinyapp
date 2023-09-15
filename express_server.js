@@ -87,6 +87,18 @@ app.post("/urls", (req, res) => {
 // //res.send("Ok");
 // }
 //Form to create new URL
+app.get("/urls/:shortURL", (req, res) => {
+  const shortURL = req.params.shortURL;
+  const userID = req.session.userIdentity;
+  const urlsForUserId = users(userID, urlDatabase);
+  const templateVars = { urlDatabase, urlsForUserId, shortURL, user: users[userID] };
+  if (!urlDatabase[shortURL]) {
+    res.status(404).send("Url does not exist");
+  } else {
+    res.render("urls_show", templateVars);
+  }
+});
+  
 app.post("/urls/:id/delete", (req, res) => {
   const deleteUrl = req.params.id;
   if (urlDatabase[deleteUrl]) {
@@ -187,9 +199,14 @@ app.post("/register", (req, res) => {
     email: email,
     password: hashedPassword
   };
-
-  req.session.userIdentity = userID;
+  if (req.body.email && req.body.password) {
+    if (!getUserByEmail(req.body.email, users)) {
+      req.session.userIdentity = userID;
   res.redirect("/urls");//redirect to urls page
+  } 
+} else {
+  res.status(404).send("This email already exists in the database")
+}
 });
 
 
