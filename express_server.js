@@ -22,7 +22,7 @@ app.use(cookieSession({
   keys: ["abc"],
 }));
 
-//Redirects user to based on login status
+// R O U T I N G, directs user to URLS of LOGIN based on login status
 
 app.get("/", (req, res) => {
   if (!userLoggedIn(req, users)) {
@@ -50,7 +50,7 @@ app.get("/urls", (req, res) => {
     const templateVars = { urls: urlDatabase, user: users[req.session.userIdentity] };
     res.render("urls_index", templateVars);
   } else {
-    res.send("<p> Please login </p>");
+    res.status(401).send("<p> Please login </p>");
   }
 });
 
@@ -60,9 +60,13 @@ app.post("/urls", (req, res) => {
   const longURL = req.body.longURL; //req.urlDatabase.longURL.longURL;
   const shortURL = generateRandomString();
  
-  urlDatabase[shortURL] = longURL;
+  urlDatabase[shortURL] = {
+    longURL: req.body.longURL, 
+    userID: req.session.userID
+  };
   res.redirect(`/urls/${shortURL}`);
-
+} else {
+  res.status(401).send("Please log in first");
 });
 
 // if (urlDatabase[shortURL]) {
@@ -95,7 +99,7 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
-//displays URL for the ogged in user
+//displays URL for the logged in user
 
 app.get("/urls/:id", (req, res) => {
   const id = req.params.id;
@@ -121,6 +125,7 @@ app.get("/u/:id", (req, res) => {
     res.status(404).send("URL not found");
   }
 });
+
 
 
 // L O G I N  R O U T E S
