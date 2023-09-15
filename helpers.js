@@ -16,8 +16,8 @@ module.exports = { getUserByEmail };
 
 
 const userLoggedIn = (req, users) => {
-  console.log(!!req.session.user_id);
-  return !!req.session.user_id && users[req.session.user_id];
+  console.log(!!req.session.userIdentity);
+  return !!req.session.userIdentity && users[req.session.userIdentity];
 };
 
 module.exports.userLoggedIn = userLoggedIn;
@@ -40,11 +40,11 @@ module.exports.generateRandomString = generateRandomString;
 /*************************************************************/
 
 //get url collection / list for a specific user
-const urlsForUserId = function(userLoggedIn, urlDatabase, user_id) {
+const urlsForUserId = function(userLoggedIn, urlDatabase, userIdentity) {
   if (userLoggedIn) {
     const urlForUser = {};
     for (const shortURL in urlDatabase) {
-      if (urlDatabase[shortURL].userID === user_id) {
+      if (urlDatabase[shortURL].userID === userIdentity) {
         urlForUser[shortURL] = urlDatabase[shortURL].longURL;
       }
     }

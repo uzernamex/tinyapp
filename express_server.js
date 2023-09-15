@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 // I M P O R T S  [F I L E S,  R O U T E S,  L I B R A R I E S,  &  M I D D L E W A R E]
 
 const express = require("express");
@@ -33,22 +32,22 @@ app.get("/", (req, res) => {
   }
 });
 
-//step one
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
+// //step one
+// app.get("/urls.json", (req, res) => {
+//   res.json(urlDatabase);
+// });
 
-//step two
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
-});
+// //step two
+// app.get("/hello", (req, res) => {
+//   res.send("<html><body>Hello <b>World</b></body></html>\n");
+// });
 
 // U R L S   R O U T E S
 
 //displays URLs once user is logged in
 app.get("/urls", (req, res) => {
   if (userLoggedIn(req, users)) {
-    const templateVars = { urls: urlDatabase, user: users[req.session.user_id] };
+    const templateVars = { urls: urlDatabase, user: users[req.session.userIdentity] };
     res.render("urls_index", templateVars);
   } else {
     res.send("<p> Please login </p>");
@@ -72,17 +71,26 @@ app.post("/urls", (req, res) => {
 // } else {
 // //   console.error("Shortened URL unavailable");
 // // }
-// return 
+// return
 // //const randomString = generateRandomString();
 // //res.send("Ok");
 // }
 //Form to create new URL
+app.post("/urls/:id/delete", (req, res) => {
+  const deleteUrl = req.params.id;
+  if (urlDatabase[deleteUrl]) {
+    delete urlDatabase.deleteUrl;
+    res.redirect("/urls");
+  } else {
+    res.status(404).send("URL not found");
+  }
+});
 
 app.get("/urls/new", (req, res) => {
-  if (!req.session.user_id) {
+  if (!req.session.userIdentity) {
     res.redirect("/login");
   } else {
-    const templateVars = { urls: urlDatabase, user: users[req.session.user_id] };
+    const templateVars = { urls: urlDatabase, user: users[req.session.userIdentity] };
     res.render("urls_new", templateVars);
   }
 });
@@ -93,7 +101,7 @@ app.get("/urls/:id", (req, res) => {
   const id = req.params.id;
   const longURL = urlDatabase[id];
   let user = null;
-  if (!longURL || !req.session.user_id) {
+  if (!longURL || !req.session.userIdentity) {
     console.error("Error: Unable to locate requested URL");
   } else {
     const templateVars = { id, longURL, user };
@@ -132,7 +140,7 @@ app.post("/login", (req, res) => {
   const hashedPassword = user.password;
 
   if (bcrypt.compareSync(password, hashedPassword)) {
-    req.session.user_id = user.id;
+    req.session.userIdentity = user.id;
     res.redirect("/urls");
   } else {
     return res.status(401).send("Invalid email or password");
@@ -144,7 +152,7 @@ app.post("/login", (req, res) => {
 
 //action to log user out, sends user to login page
 app.post("/logout", (req, res) => {
-  req.session.user_id = null;
+  req.session.userIdentity = null;
   res.redirect("/login");
   res.render("register");
 });
@@ -168,7 +176,7 @@ app.post("/register", (req, res) => {
     password: hashedPassword
   };
 
-  req.session.user_id = userID;
+  req.session.userIdentity = userID;
   res.redirect("/urls");//redirect to urls page
 });
 
