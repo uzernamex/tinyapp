@@ -107,7 +107,7 @@ app.post("/urls/:id/delete", (req, res) => {
     delete urlDatabase[shortURL];
     res.redirect("/urls");
   } else {
-    res.status(404).send("URL not found");
+    res.status(404).send("URL has been deleted");
   }
 });
 
