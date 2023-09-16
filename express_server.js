@@ -90,30 +90,13 @@ app.post("/urls", (req, res) => {
 // //res.send("Ok");
 // }
 //Form to create new URL
-app.get("/urls/:shortURL", (req, res) => {
-  const shortURL = req.params.shortURL;
-  const userID = req.session.userIdentity;
-  //const urlsForUserId = users(userID, urlDatabase);
-  const templateVars = {
-    urlDatabase,
-    shortURL,
-    id: shortURL,
-    longURL: urlDatabase[shortURL],
-    user: users[userID]
-  };
-  if (!urlDatabase[shortURL]) {
-    res.status(404).send("Url does not exist");
-  } else {
-    res.render("urls_show", templateVars);
-  }
-});
   
-app.post("/urls/:shortURL/delete", (req, res) => {
+app.post("/urls/:id/delete", (req, res) => {
   const shortURL = req.params.shortURL;
   const userID = req.session.userIdentity;
   
   if (urlDatabase[shortURL] && urlDatabase[shortURL].userID === userID) {
-    delete urlDatabase.shortURL; //[sjotrUrl]
+    delete urlDatabase[shortURL];
     res.redirect("/urls");
   } else {
     res.status(404).send("URL not found");
@@ -121,10 +104,12 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
+  //const id = req.params.id;
+  //const longURL = urlDatabase[id];
   if (req.session.userIdentity) {
     const templateVars = {
-      urls: urlDatabase,
-      user: users[req.session.userIdentity]
+      urls: urlDatabase.longURL,
+      user: users[req.session.id]
     };
     res.render("urls_new", templateVars);
   } else {
@@ -132,12 +117,27 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
+app.post("urls/new", (req, res) => {
+  const longURL = req.body.longURL;
+  const userID = req.session.userIdentity;
+  if (userLoggedIn(req, users)) {
+    const shortURL = generateRandomString();
+    urlDatabase[shortURL] = {
+      longURL: longURL,
+      userID: userID
+    };
+    res.redirect(`/urls/${shortURL}`);
+  } else {
+    res.status(401).send("Please log in");
+  }
+});
 //*******>>displays URL for the logged in user
 
 app.get("/urls/:id", (req, res) => {
   const id = req.params.id;
   const longURL = urlDatabase[id];
   let user = null;
+  //**if logged in */
   if (!longURL || !req.session.userIdentity) {
     console.error("Error: Unable to locate requested URL");
   } else {
@@ -160,6 +160,23 @@ app.get("/u/:id", (req, res) => {
 });
 
 
+app.get("/urls/:shortURL", (req, res) => {
+  const shortURL = req.params.shortURL;
+  const userID = req.session.userIdentity;
+  //const urlsForUserId = users(userID, urlDatabase);
+  const templateVars = {
+    urlDatabase,
+    shortURL,
+    id: shortURL,
+    longURL: urlDatabase[shortURL],
+    user: users[userID]
+  };
+  if (!urlDatabase[shortURL]) {
+    res.status(404).send("Url does not exist");
+  } else {
+    res.render("urls_show", templateVars);
+  }
+});
 
 // L O G I N  R O U T E S
 
