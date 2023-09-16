@@ -1,4 +1,4 @@
-// I M P O R T S  [F I L E S,  R O U T E S,  L I B R A R I E S,  &  M I D D L E W A R E]
+// M O D U L E   I M P O R T S
 
 const express = require("express");
 const cookieSession = require('cookie-session');
@@ -7,18 +7,19 @@ const userLoggedIn = require("./helpers").userLoggedIn;
 const generateRandomString = require("./helpers").generateRandomString;
 const bcrypt = require("bcryptjs");
 const bodyParser = require("body-parser");
-const app = express();
-const PORT = 8080;
 const users = require("./database").users;
 const urlDatabase = require("./database").urlDatabase;
 
+const app = express();
+const PORT = 8080;
 
-//V I E W   E N G I N E
+
+// V I E W   E N G I N E
 
 app.set("view engine", "ejs");
 
 
-//M I D D L E W A R E
+// M I D D L E W A R E
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.urlencoded({ extended: true }));
@@ -28,7 +29,7 @@ app.use(cookieSession({
 }));
 
 
-// R O U T I N G  [ R O O T ] - directs user based on login status
+// R O U T I N G   [ R O O T ] - directs user based on login status
 
 app.get("/", (req, res) => {
   if (!userLoggedIn(req, users)) {
@@ -39,7 +40,7 @@ app.get("/", (req, res) => {
 });
 
 
-// L O G I N  R O U T E S
+// L O G I N   R O U T E S
 
 app.get("/login", (req, res) => {
   if (userLoggedIn(req, users)) {
@@ -61,9 +62,9 @@ app.post("/login", (req, res) => {
     return res.status(401).send("Invalid email or password");
   }
 });
- 
 
-// U R L S   R O U T E S - displays URLs for a verified user
+
+// U R L   R O U T E S - displays URLs for a verified user
 
 app.get("/urls", (req, res) => {
   if (userLoggedIn(req, users)) {
@@ -110,9 +111,9 @@ app.post("/urls/:id/delete", (req, res) => {
   }
 });
 
+// - Retrieves url data pertaining to authenticated user's information
+
 app.get("/urls/new", (req, res) => {
-  //const id = req.params.id;
-// const longURL = urlDatabase[id];
   if (req.session.userIdentity) {
     const templateVars = {
       urls: urlDatabase.longURL,
@@ -125,8 +126,6 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("urls/new", (req, res) => {
-  //const id = req.params.id;
-  //const longURL = urlDatabase[id];
   if (req.session.userIdentity) {
     const templateVars = {
       urls: urlDatabase.longURL,
@@ -138,20 +137,23 @@ app.post("urls/new", (req, res) => {
   }
 });
 
-app.get("urls#", (req, res) => {
+app.get("/urls#", (req, res) => {
   if (req.session.userIdentity) {
-    //const id = req.params.id;
-    //const longURL = urlDatabase[id];
     const templateVars = {
       urls: urlDatabase.longURL,
       user: users[req.session.id]
     };
-    res.redirect("urls_new", templateVars);
+    res.redirect("urls_new");
   } else {
     res.redirect("/login");
   }
 });
 
+app.post("/urls#", (req, res) => {
+  if (req.session.userIdentity) {
+    res.redirect("/urls/new")
+  }
+})
 // - displays URL for the logged in user
 
 app.get("/u/:id", (req, res) => {
@@ -162,6 +164,8 @@ app.get("/u/:id", (req, res) => {
   if (!longURL || !req.session.userIdentity) {
     const templateVars = { id, longURL, user };
     res.render("urls_show", templateVars);
+  } else if (longURL && req.session.userIdentity) {
+    res.redirect("/urls");
   }
 });
 
@@ -183,42 +187,29 @@ app.get("/urls/:shortURL", (req, res) => {
   }
 });
 
-
 app.post("/u/:id", (req, res) => {
   const shortURL = req.params.id;
   const longURL = urlDatabase[shortURL];
-  
-  if (longURL) {
+  if (shortURL) {
     res.redirect(longURL);
   } else {
     res.status(401).send("Please log in");
   }
 });
-//redirects to original long URL from short URL
 
 app.get("/u/:id", (req, res) => {
   const shortURL = req.params.id;
+  const longURL = urlDatabase[shortURL];
   if (shortURL) {
-    res.render("longURL");
+    res.redirect("longURL");
   } else {
     res.status(404).send("URL not found");
   }
 });
 
-    
-    
-//     (bcrypt.compareSync(password, hashedPassword)) {
-//     req.session.userIdentity = user.id;
-//     res.redirect("/urls");
-//   } else {
-//     return res.status(401).send("Invalid email or password");
-//   }
-// });
+   
+// L O G O U T - Action to log user out, sends user to login page
 
-
-// L O G O U T
-
-//action to log user out, sends user to login page
 app.post("/logout", (req, res) => {
   req.session.userIdentity = null;
   res.redirect("/login");
@@ -252,6 +243,8 @@ app.post("/register", (req, res) => {
   }
 });
 
+
+// E X P R E S S   S E R V E R
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}!`);
