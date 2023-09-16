@@ -139,10 +139,6 @@ app.post("urls/new", (req, res) => {
 
 app.get("/urls#", (req, res) => {
   if (req.session.userIdentity) {
-    const templateVars = {
-      urls: urlDatabase.longURL,
-      user: users[req.session.id]
-    };
     res.redirect("urls_new");
   } else {
     res.redirect("/login");
@@ -151,9 +147,11 @@ app.get("/urls#", (req, res) => {
 
 app.post("/urls#", (req, res) => {
   if (req.session.userIdentity) {
-    res.redirect("/urls/new")
+    res.redirect("/urls/new");
   }
-})
+});
+
+
 // - displays URL for the logged in user
 
 app.get("/u/:id", (req, res) => {
@@ -199,7 +197,6 @@ app.post("/u/:id", (req, res) => {
 
 app.get("/u/:id", (req, res) => {
   const shortURL = req.params.id;
-  const longURL = urlDatabase[shortURL];
   if (shortURL) {
     res.redirect("longURL");
   } else {
