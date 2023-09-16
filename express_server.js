@@ -12,10 +12,11 @@ const PORT = 8080;
 const users = require("./database").users;
 const urlDatabase = require("./database").urlDatabase;
 
-//**********************************************************/
+
 //V I E W   E N G I N E
 
 app.set("view engine", "ejs");
+
 
 //M I D D L E W A R E
 
@@ -26,7 +27,8 @@ app.use(cookieSession({
   keys: ["abc"],
 }));
 
-// R O U T I N G  [ R O O T ], directs user to URLS of LOGIN based on login status
+
+// R O U T I N G  [ R O O T ] - directs user based on login status
 
 app.get("/", (req, res) => {
   if (!userLoggedIn(req, users)) {
@@ -35,16 +37,6 @@ app.get("/", (req, res) => {
     res.redirect("/urls");
   }
 });
-
-// //step one
-// app.get("/urls.json", (req, res) => {
-//   res.json(urlDatabase);
-// });
-
-// //step two
-// app.get("/hello", (req, res) => {
-//   res.send("<html><body>Hello <b>World</b></body></html>\n");
-// });
 
 
 // L O G I N  R O U T E S
@@ -61,7 +53,6 @@ app.post("/login", (req, res) => {
   const password = req.body.password;
   const email = req.body.email;
   const user = getUserByEmail(email, users);
-  //const hashedPassword = user.password;
   
   if (user && bcrypt.compareSync(password, user.password)) {
     req.session.userIdentity = user.id;
@@ -71,7 +62,8 @@ app.post("/login", (req, res) => {
   }
 });
  
-// U R L S   R O U T E S - displays URLs once user is logged in
+
+// U R L S   R O U T E S - displays URLs for a verified user
 
 app.get("/urls", (req, res) => {
   if (userLoggedIn(req, users)) {
@@ -85,37 +77,27 @@ app.get("/urls", (req, res) => {
   }
 });
 
-//Generates a short URL
+// - Generates a shortened URL
 
 app.post("/urls", (req, res) => {
   if (userLoggedIn(req, users)) {
-    const longURL = req.body.longURL; //req.urlDatabase.longURL.longURL;
+    const longURL = req.body.longURL;
     const shortURL = generateRandomString();
     const userID = req.session.userIdentity;
     
     urlDatabase[shortURL] = {
-      longURL: longURL, //req.body.longURL, //LONGURL OR //CHK
-      userID: userID //req.session.userID
+      longURL: longURL,
+      userID: userID
     };
     
     res.redirect(`/urls/${shortURL}`);
   } else {
-    res.status(401).send("Please log in first");
+    res.status(401).send("Please log in to perform this action");
   }
 });
 
-// if (urlDatabase[shortURL]) {
-//   delete urlDatabase[shortURL];
-//   // res.redirect("/urls");
-// } else {
-// //   console.error("Shortened URL unavailable");
-// // }
-// return
-// //const randomString = generateRandomString();
-// //res.send("Ok");
-// }
-//Form to create new URL
-  
+// - Deletes a specified url for the logged in user
+
 app.post("/urls/:id/delete", (req, res) => {
   const shortURL = req.params.shortURL;
   const userID = req.session.userIdentity;
@@ -129,8 +111,8 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  const id = req.params.id;
-  const longURL = urlDatabase[id];
+  //const id = req.params.id;
+// const longURL = urlDatabase[id];
   if (req.session.userIdentity) {
     const templateVars = {
       urls: urlDatabase.longURL,
@@ -142,11 +124,9 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
-
 app.post("urls/new", (req, res) => {
-  
-  const id = req.params.id;
-  const longURL = urlDatabase[id];
+  //const id = req.params.id;
+  //const longURL = urlDatabase[id];
   if (req.session.userIdentity) {
     const templateVars = {
       urls: urlDatabase.longURL,
@@ -160,8 +140,8 @@ app.post("urls/new", (req, res) => {
 
 app.get("urls#", (req, res) => {
   if (req.session.userIdentity) {
-    const id = req.params.id;
-    const longURL = urlDatabase[id];
+    //const id = req.params.id;
+    //const longURL = urlDatabase[id];
     const templateVars = {
       urls: urlDatabase.longURL,
       user: users[req.session.id]
@@ -172,15 +152,14 @@ app.get("urls#", (req, res) => {
   }
 });
 
-//*******>>displays URL for the logged in user
+// - displays URL for the logged in user
 
 app.get("/u/:id", (req, res) => {
   const id = req.params.id;
   const longURL = urlDatabase[id];
   let user = null;
-  //**if logged in */
+  
   if (!longURL || !req.session.userIdentity) {
-  } else {
     const templateVars = { id, longURL, user };
     res.render("urls_show", templateVars);
   }
@@ -190,7 +169,6 @@ app.get("/u/:id", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const userID = req.session.userIdentity;
-  //const urlsForUserId = users(userID, urlDatabase);
   const templateVars = {
     urlDatabase,
     shortURL,
@@ -220,8 +198,6 @@ app.post("/u/:id", (req, res) => {
 
 app.get("/u/:id", (req, res) => {
   const shortURL = req.params.id;
-  const longURL = urlDatabase[shortURL];
-  
   if (shortURL) {
     res.render("longURL");
   } else {
@@ -272,7 +248,7 @@ app.post("/register", (req, res) => {
       password: hashedPassword
     };
     req.session.userIdentity = userID;
-    res.redirect("/urls");//redirect to urls page
+    res.redirect("/urls");
   }
 });
 
