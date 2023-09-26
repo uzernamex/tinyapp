@@ -40,18 +40,15 @@ module.exports.generateRandomString = generateRandomString;
 /*************************************************************/
 
 //get url collection / list for a specific user
-const urlsForUserId = function(userLoggedIn, urlDatabase, userIdentity) {
-  if (userLoggedIn) {
-    const urlForUser = {};
-    for (const shortURL in urlDatabase) {
-      if (urlDatabase[shortURL].userID === userIdentity) {
-        urlForUser[shortURL] = urlDatabase[shortURL].longURL;
-      }
+const urlsForUserId = function(urlDatabase, userIdentity) {
+
+  const urlForUser = {};
+  for (const shortURL in urlDatabase) {
+    if (urlDatabase[shortURL].userID === userIdentity) {
+      urlForUser[shortURL] = urlDatabase[shortURL].longURL;
     }
-    return urlForUser;
-  } else {
-    return null;
   }
+  return urlForUser;
 };
 
 module.exports.urlsForUserId = urlsForUserId;

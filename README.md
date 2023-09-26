@@ -5,6 +5,7 @@ TinyApp is a full stack web application built with Node and Express that allows 
 #
 ## Final Product
 
+
 ### Register your name and email
 !["Screenshot of Registration page"](https://github.com/uzernamex/tinyapp/blob/main/docs/TinyApp-%5B1%5DRegistration.png?raw=true)
 
@@ -28,7 +29,7 @@ TinyApp is a full stack web application built with Node and Express that allows 
 #
 ## Getting Started
 
-- Install all dependencies using the `npm install` command.
+- Install all of the dependencies using the `npm install` command.
 
       npm install node.js
 

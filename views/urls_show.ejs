@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-
     
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
@@ -16,13 +15,30 @@
     <div class="card text-center">
       <div class="card-header"></div>
       <div class="card-body">
-        <h5 class="card-title">TinyURL for: <%= longURL.longURL %></h5>
-        <p class="card-text">Short URL ID: <a href="/u/<%= id %>"><%= id %></a>
+        <h5 class="card-title">TinyURL for: <a href="/u/<%= id %>"><%= longURL.longURL %></a></h5>
+  
+          <p class="card-text">Short URL ID: <a href="/u/<%= id %>"><%= id %></a>
         </p>
       </div>
-      <div class="card-footer text-muted"></div>
-    </div>
 
+      <form method="POST" action="/urls/<%= shortURL %>?_method=PUT">
+        <p class="card-text">
+          New URL:
+          <input type="text" value="https://" name="longURL">
+          <button type="submit" class="btn btn-primary">
+            Submit
+          </button>
+          </input>
+        </p>
+      </form>
+
+  
+      
+
+<div class="card-footer text-muted">
+          </div>
+      </div>
+    </div>
 
     <!-- Bootstrap JS -->
     <script

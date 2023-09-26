@@ -2,14 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport"
-    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
 
-    
     <!-- Bootstrap CSS -->
-    <link
-    rel="stylesheet"
+    <link rel="stylesheet"
     href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
     integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
     crossorigin="anonymous"
@@ -18,6 +15,7 @@
   </head>
   <body> 
   <%- include('partials/_header') %>
+
   <main style="margin: 1em;">
     <h3>My URLs</h3>
     <table class="table">
@@ -33,20 +31,22 @@
         <% for (let id in urls) { %>
           <tr>
             <td><%= id %></td>
-            <td><%= urls[id].longURL %></td>
-            <td><a href= "/urls/<%= id %>">Edit</a></td>
+            <td id="longUrl_<%= id %>"><%= urls[id] %></td>
+            <td>
+
+              <a href="/urls/<%= id %>" class="btn btn-primary">Edit</a>
+
+              </form>
+            </td>
             <td>
               <form method="POST" action="/urls/<%= id %>/delete">
-                <button type="submit">Delete</button>
+                <button type="submit" class="btn btn-danger">Delete</button>
               </form>
             </td>
           </tr>
          <% } %>
              </tbody>
         </table>
-        <form id="shortenedURL" method="POST" action="/urls">
-          <button type="submit" id="shortenedURLButton" class="btn btn-primary">Shorten URL</button>
-        </form> 
       </main>
 
 
