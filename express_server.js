@@ -5,11 +5,7 @@ const PORT = 8080;
 
 // H E L P E R   F U N C T I O N S
 
-const {
-const getUserByEmail = require("./helpers").getUserByEmail;
-const userLoggedIn = require("./helpers").userLoggedIn;
-const generateRandomString = require("./helpers").generateRandomString;
-const urlsForUserId = require("./helpers").urlsForUserId;
+const { getUserByEmail, userLoggedIn, generateRandomString, urlsForUserId } = require("./helpers");
 
 
 // M I D D L E W A R E
@@ -29,15 +25,12 @@ app.use(cookieSession({
 app.use(methodOverride('_method'));
 
 
-// V A R I A B L E S (Global)
+// G L O B A L   V A R I A B L E S
 
-const users = require("./database").users;
-const urlDatabase = require("./database").urlDatabase;
+const { users, urlDatabase } = require("./database");
 
-// R O U T I N G   [ R O O T ] - directs user based on login status
 
-// H O M E P A G E
-
+// R O O T   R O U T E
 
 app.get("/", (req, res) => {
   if (!userLoggedIn(req, users)) {
@@ -54,7 +47,7 @@ app.get("/login", (req, res) => {
   if (userLoggedIn(req, users)) {
     res.redirect("/urls");
   } else {
-    return res.render("login");
+    res.render("login");
   }
 });
 
@@ -67,12 +60,12 @@ app.post("/login", (req, res) => {
     req.session.userIdentity = user.id;
     res.redirect("/urls");
   } else {
-    return res.status(401).send('Invalid email or password. Please <a href= "/register">register here<a> or "<a href= "/login">login<a> again.');
+    res.status(401).send('Invalid email or password. Please <a href= "/register">register here<a> or "<a href= "/login">login<a> again.');
   }
 });
 
 
-// U R L   R O U T E S - displays URLs for a verified user
+// U R L   R O U T E S
 
 app.get("/urls", (req, res) => {
   if (userLoggedIn(req, users)) {
@@ -86,8 +79,6 @@ app.get("/urls", (req, res) => {
     res.status(401).send('<a href= "/login">login<a>');
   }
 });
-
-// - Generates a shortened URL
 
 app.post("/urls", (req, res) => {
   if (userLoggedIn(req, users)) {
@@ -104,8 +95,6 @@ app.post("/urls", (req, res) => {
     res.status(401).send('Please <a href= "/login">login<a> to perform this action.');
   }
 });
-
-// - Deletes a specified url for the logged in user
 
 app.post("/urls_show/:id", (req, res) => {
   if (req.session.userIdentity) {
@@ -124,7 +113,6 @@ app.post("/urls_show/:id", (req, res) => {
   }
 });
 
-
 app.put("/urls/:shortURL", (req, res) => {
 
   const shortURL = req.params.shortURL;
@@ -132,7 +120,6 @@ app.put("/urls/:shortURL", (req, res) => {
   urlDatabase[shortURL].longURL = longURL;
   res.redirect("/urls");
 });
-
 
 app.post("/urls/:id/delete", (req, res) => {
   const shortURL = req.params.id;
@@ -155,8 +142,6 @@ app.post("/urls/:id/edit", (req, res) => {
   }
 });
 
-// - Retrieves url data pertaining to authenticated user's information
-
 app.get("/urls/new", (req, res) => {
   if (req.session.userIdentity) {
     const templateVars = {
@@ -168,8 +153,6 @@ app.get("/urls/new", (req, res) => {
     res.redirect("/login");
   }
 });
-
-// - displays URL for the logged in user
 
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
@@ -198,7 +181,8 @@ app.get("/u/:id", (req, res) => {
   }
 });
 
-// L O G O U T - Action to log user out, sends user to login page
+
+// L O G O U T   R O U T E
 
 app.post("/logout", (req, res) => {
   req.session = null;
@@ -229,6 +213,7 @@ app.post("/register", (req, res) => {
     res.redirect("/urls");
   }
 });
+
 
 // E X P R E S S   S E R V E R
 
